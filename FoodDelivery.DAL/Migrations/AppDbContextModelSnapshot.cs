@@ -22,6 +22,61 @@ namespace FoodDelivery.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FoodDelivery.Models.Models.Analytic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeliveredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OrderedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RiderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("RestaurantId");
+
+                    b.HasIndex("RiderId");
+
+                    b.ToTable("Analytics");
+                });
+
             modelBuilder.Entity("FoodDelivery.Models.Models.DeliveryAssignment", b =>
                 {
                     b.Property<int>("Id")
@@ -126,6 +181,9 @@ namespace FoodDelivery.DAL.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RiderId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -142,6 +200,8 @@ namespace FoodDelivery.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RestaurantId");
+
+                    b.HasIndex("RiderId");
 
                     b.HasIndex("UserId");
 
@@ -311,6 +371,30 @@ namespace FoodDelivery.DAL.Migrations
                             FullName = "Juan Dela Cruz",
                             IsDeleted = false,
                             Status = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FullName = "Bentley Sanders",
+                            IsDeleted = false,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FullName = "Walter Bond",
+                            IsDeleted = false,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FullName = "Franklin Salazar",
+                            IsDeleted = false,
+                            Status = 0
                         });
                 });
 
@@ -362,10 +446,44 @@ namespace FoodDelivery.DAL.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Mario.Yaoyao@ext.essilor.com",
-                            FullName = "Mario YAOYAO II",
+                            FullName = "Mario Yaoyao II",
                             IsDeleted = false,
                             PhoneNumber = "09171234567"
                         });
+                });
+
+            modelBuilder.Entity("FoodDelivery.Models.Models.Analytic", b =>
+                {
+                    b.HasOne("FoodDelivery.Models.Models.User", "Customer")
+                        .WithMany("Analytics")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FoodDelivery.Models.Models.Order", "Order")
+                        .WithMany("Analytics")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FoodDelivery.Models.Models.Restaurant", "Restaurant")
+                        .WithMany("Analytics")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FoodDelivery.Models.Models.Rider", "Rider")
+                        .WithMany("Analytics")
+                        .HasForeignKey("RiderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Restaurant");
+
+                    b.Navigation("Rider");
                 });
 
             modelBuilder.Entity("FoodDelivery.Models.Models.DeliveryAssignment", b =>
@@ -406,6 +524,11 @@ namespace FoodDelivery.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FoodDelivery.Models.Models.Rider", "Rider")
+                        .WithMany("Orders")
+                        .HasForeignKey("RiderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("FoodDelivery.Models.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -413,6 +536,8 @@ namespace FoodDelivery.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Restaurant");
+
+                    b.Navigation("Rider");
 
                     b.Navigation("User");
                 });
@@ -449,6 +574,8 @@ namespace FoodDelivery.DAL.Migrations
 
             modelBuilder.Entity("FoodDelivery.Models.Models.Order", b =>
                 {
+                    b.Navigation("Analytics");
+
                     b.Navigation("DeliveryAssignments");
 
                     b.Navigation("OrderItems");
@@ -458,6 +585,8 @@ namespace FoodDelivery.DAL.Migrations
 
             modelBuilder.Entity("FoodDelivery.Models.Models.Restaurant", b =>
                 {
+                    b.Navigation("Analytics");
+
                     b.Navigation("MenuItems");
 
                     b.Navigation("Orders");
@@ -465,11 +594,17 @@ namespace FoodDelivery.DAL.Migrations
 
             modelBuilder.Entity("FoodDelivery.Models.Models.Rider", b =>
                 {
+                    b.Navigation("Analytics");
+
                     b.Navigation("DeliveryAssignments");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("FoodDelivery.Models.Models.User", b =>
                 {
+                    b.Navigation("Analytics");
+
                     b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618

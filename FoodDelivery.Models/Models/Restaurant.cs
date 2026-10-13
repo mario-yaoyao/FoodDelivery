@@ -8,5 +8,6 @@
 
         public ICollection<MenuItem> MenuItems { get; set; } = [];
         public ICollection<Order> Orders { get; set; } = [];
+        public ICollection<Analytic> Analytics { get; set; } = [];
     }
 }

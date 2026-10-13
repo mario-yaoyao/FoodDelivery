@@ -17,8 +17,7 @@ namespace FoodDelivery.BLL.Services
 
             var config = new ConsumerConfig
             {
-                //BootstrapServers = "localhost:9092", // Note: get value from appsettings.json
-                BootstrapServers = configuration.GetConnectionString("KafkaServer"), // Note: get value from appsettings.json
+                BootstrapServers = configuration.GetConnectionString("KafkaServer"),
                 GroupId = groupId,
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };

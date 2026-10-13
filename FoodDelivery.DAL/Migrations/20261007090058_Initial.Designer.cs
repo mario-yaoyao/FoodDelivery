@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodDelivery.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261006043219_Initial")]
+    [Migration("20261007090058_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -129,6 +129,9 @@ namespace FoodDelivery.DAL.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RiderId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -145,6 +148,8 @@ namespace FoodDelivery.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RestaurantId");
+
+                    b.HasIndex("RiderId");
 
                     b.HasIndex("UserId");
 
@@ -314,6 +319,30 @@ namespace FoodDelivery.DAL.Migrations
                             FullName = "Juan Dela Cruz",
                             IsDeleted = false,
                             Status = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FullName = "Bentley Sanders",
+                            IsDeleted = false,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FullName = "Walter Bond",
+                            IsDeleted = false,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FullName = "Franklin Salazar",
+                            IsDeleted = false,
+                            Status = 0
                         });
                 });
 
@@ -365,7 +394,7 @@ namespace FoodDelivery.DAL.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Mario.Yaoyao@ext.essilor.com",
-                            FullName = "Mario YAOYAO II",
+                            FullName = "Mario Yaoyao II",
                             IsDeleted = false,
                             PhoneNumber = "09171234567"
                         });
@@ -409,6 +438,11 @@ namespace FoodDelivery.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FoodDelivery.Models.Models.Rider", "Rider")
+                        .WithMany("Orders")
+                        .HasForeignKey("RiderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("FoodDelivery.Models.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -416,6 +450,8 @@ namespace FoodDelivery.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Restaurant");
+
+                    b.Navigation("Rider");
 
                     b.Navigation("User");
                 });
@@ -469,6 +505,8 @@ namespace FoodDelivery.DAL.Migrations
             modelBuilder.Entity("FoodDelivery.Models.Models.Rider", b =>
                 {
                     b.Navigation("DeliveryAssignments");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("FoodDelivery.Models.Models.User", b =>

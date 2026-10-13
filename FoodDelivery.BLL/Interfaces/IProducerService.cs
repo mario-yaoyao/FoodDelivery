@@ -6,7 +6,6 @@
             string topic,
             T message,
             string? key = null,
-            CancellationToken cancellationToken = default
-            );
+            CancellationToken cancellationToken = default);
     }
 }

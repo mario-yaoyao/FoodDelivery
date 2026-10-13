@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace FoodDelivery.DAL.Migrations
 {
     /// <inheritdoc />
@@ -97,6 +99,7 @@ namespace FoodDelivery.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    RiderId = table.Column<int>(type: "int", nullable: true),
                     RestaurantId = table.Column<int>(type: "int", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -113,6 +116,12 @@ namespace FoodDelivery.DAL.Migrations
                         principalTable: "Restaurants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_Riders_RiderId",
+                        column: x => x.RiderId,
+                        principalTable: "Riders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Orders_Users_UserId",
                         column: x => x.UserId,
@@ -214,12 +223,18 @@ namespace FoodDelivery.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Riders",
                 columns: new[] { "Id", "CreatedAt", "FullName", "IsDeleted", "Status", "UpdatedAt" },
-                values: new object[] { 1, new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "Juan Dela Cruz", false, 0, null });
+                values: new object[,]
+                {
+                    { 1, new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "Juan Dela Cruz", false, 0, null },
+                    { 2, new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bentley Sanders", false, 0, null },
+                    { 3, new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "Walter Bond", false, 0, null },
+                    { 4, new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "Franklin Salazar", false, 0, null }
+                });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FullName", "IsDeleted", "PhoneNumber", "UpdatedAt" },
-                values: new object[] { 1, new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mario.Yaoyao@ext.essilor.com", "Mario YAOYAO II", false, "09171234567", null });
+                values: new object[] { 1, new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "Mario.Yaoyao@ext.essilor.com", "Mario Yaoyao II", false, "09171234567", null });
 
             migrationBuilder.InsertData(
                 table: "MenuItems",
@@ -255,6 +270,11 @@ namespace FoodDelivery.DAL.Migrations
                 name: "IX_Orders_RestaurantId",
                 table: "Orders",
                 column: "RestaurantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_RiderId",
+                table: "Orders",
+                column: "RiderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_UserId",
@@ -310,9 +330,6 @@ namespace FoodDelivery.DAL.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
-                name: "Riders");
-
-            migrationBuilder.DropTable(
                 name: "MenuItems");
 
             migrationBuilder.DropTable(
@@ -320,6 +337,9 @@ namespace FoodDelivery.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Restaurants");
+
+            migrationBuilder.DropTable(
+                name: "Riders");
 
             migrationBuilder.DropTable(
                 name: "Users");

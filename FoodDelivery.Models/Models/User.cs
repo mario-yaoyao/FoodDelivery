@@ -7,5 +7,6 @@
         public string PhoneNumber { get; set; } = string.Empty;
 
         public ICollection<Order> Orders { get; set; } = [];
+        public ICollection<Analytic> Analytics { get; set; } = [];
     }
 }

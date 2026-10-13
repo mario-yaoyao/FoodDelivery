@@ -1,6 +1,7 @@
 ﻿using FoodDelivery.DAL.Data;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories
@@ -25,7 +26,11 @@ namespace FoodDelivery.DAL.Repositories
         {
             try
             {
-                return await context.Orders.FindAsync(orderId);
+                return await context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.Restaurant)
+                    .Include(o => o.Rider)
+                    .FirstOrDefaultAsync(o => o.Id == orderId);
             }
             catch (Exception ex)
             {

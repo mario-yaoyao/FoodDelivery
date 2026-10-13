@@ -42,7 +42,7 @@ namespace FoodDelivery.API.Controllers
         }
 
         [HttpPost("{orderId}/ready")]
-        public async Task<ActionResult<ApiResDto<object>>> MArkOrderReady(int orderId)
+        public async Task<ActionResult<ApiResDto<object>>> MarkOrderReady(int orderId)
         {
             try
             {

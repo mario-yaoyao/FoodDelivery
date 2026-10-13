@@ -9,5 +9,7 @@ namespace FoodDelivery.Models.Models
         public RiderStatus Status { get; set; } = RiderStatus.Available;
 
         public ICollection<DeliveryAssignment> DeliveryAssignments { get; set; } = [];
+        public ICollection<Order> Orders { get; set; } = [];
+        public ICollection<Analytic> Analytics { get; set; } = [];
     }
 }

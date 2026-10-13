@@ -14,6 +14,7 @@ namespace FoodDelivery.DAL.Data
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<DeliveryAssignment> DeliveryAssignments { get; set; }
+        public DbSet<Analytic> Analytics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,17 +56,51 @@ namespace FoodDelivery.DAL.Data
                 .Property(e => e.Price)
                 .HasPrecision(18, 2);
 
+            modelBuilder.Entity<Analytic>()
+                .Property(a => a.TotalAmount)
+                .HasPrecision(18, 2);
+
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Order)
                 .WithMany(o => o.OrderItems)
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Rider)
+                .WithMany(r => r.Orders)
+                .HasForeignKey(o => o.RiderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Analytic>()
+                .HasOne(a => a.Order)
+                .WithMany(o => o.Analytics)
+                .HasForeignKey(a => a.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Analytic>()
+                .HasOne(a => a.Customer)
+                .WithMany(u => u.Analytics)
+                .HasForeignKey(a => a.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Analytic>()
+                .HasOne(a => a.Restaurant)
+                .WithMany(r => r.Analytics)
+                .HasForeignKey(a => a.RestaurantId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Analytic>()
+                .HasOne(a => a.Rider)
+                .WithMany(r => r.Analytics)
+                .HasForeignKey(a => a.RiderId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
                     Id = 1,
-                    FullName = "Mario YAOYAO II",
+                    FullName = "Mario Yaoyao II",
                     Email = "Mario.Yaoyao@ext.essilor.com",
                     PhoneNumber = "09171234567",
                     CreatedAt = new DateTime(2026, 10, 6)
@@ -98,6 +133,27 @@ namespace FoodDelivery.DAL.Data
                 {
                     Id = 1,
                     FullName = "Juan Dela Cruz",
+                    Status = RiderStatus.Available,
+                    CreatedAt = new DateTime(2026, 10, 6)
+                },
+                new Rider
+                {
+                    Id = 2,
+                    FullName = "Bentley Sanders",
+                    Status = RiderStatus.Available,
+                    CreatedAt = new DateTime(2026, 10, 6)
+                },
+                new Rider
+                {
+                    Id = 3,
+                    FullName = "Walter Bond",
+                    Status = RiderStatus.Available,
+                    CreatedAt = new DateTime(2026, 10, 6)
+                },
+                new Rider
+                {
+                    Id = 4,
+                    FullName = "Franklin Salazar",
                     Status = RiderStatus.Available,
                     CreatedAt = new DateTime(2026, 10, 6)
                 });

@@ -47,14 +47,24 @@ namespace FoodDelivery.BLL.Services
 
             await orderRepository.AddOrderAsync(order);
 
-            // Broadcast Implementation - Notification, Analytics
+            var createdOrder = await orderRepository.GetOrderByIdAsync(order.Id);
+            if (createdOrder is null) return false;
+
+             //Broadcast Implementation - Notification, Analytics
             await producerService.PublishAsync(
                 "order-created",
                 new OrderCreatedEvent
                 {
-                    OrderId = order.Id,
-                    UserId = userId,
-                    RestaurantId = order.RestaurantId
+                    OrderId = createdOrder.Id,
+                    CustomerId = createdOrder.UserId,
+                    CustomerName = createdOrder.User.FullName,
+                    CustomerEmail = createdOrder.User.Email,
+                    RestaurantId = createdOrder.RestaurantId,
+                    RestaurantName = createdOrder.Restaurant.Name,
+                    RiderId = createdOrder.RiderId,
+                    TotalAmount = createdOrder.TotalAmount,
+                    Status = createdOrder.Status,
+                    CreatedAt = DateTime.UtcNow
                 }
             );
 
@@ -77,7 +87,10 @@ namespace FoodDelivery.BLL.Services
                 new DeliveryRequestedEvent
                 {
                     OrderId = order.Id,
-                    RestaurantId = order.RestaurantId
+                    CustomerName = order.User.FullName,
+                    CustomerEmail = order.User.Email,
+                    RestaurantName = order.Restaurant.Name,
+                    RequestedAt = DateTime.UtcNow
                 },
                 $"ORD-{order.Id}"
                 );
