@@ -1,9 +1,9 @@
 ﻿using System.Data;
+using FoodDelivery.DAL.Interfaces;
 using Microsoft.Data.SqlClient;
-using Hangfire.DAL.Interfaces;
 using Microsoft.Extensions.Configuration;
 
-namespace Hangfire.DAL.Data;
+namespace FoodDelivery.DAL.Data;
 
 public class DbConnectionFactory(IConfiguration configuration) : IDbConnectionFactory
 {

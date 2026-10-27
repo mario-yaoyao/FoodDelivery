@@ -1,4 +1,4 @@
-﻿namespace FoodDelivery.BLL.Interfaces
+﻿namespace FoodDelivery.Infrastructure.Email.Interfaces
 {
     public interface IEmailService
     {

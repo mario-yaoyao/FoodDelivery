@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
-using Hangfire.DAL.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories

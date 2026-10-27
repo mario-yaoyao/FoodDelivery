@@ -2,6 +2,7 @@
   <Project Path="../FoodDelivery.AnalyticsConsumer/FoodDelivery.AnalyticsConsumer.csproj" Id="6ab9e923-68a5-4440-90f4-9b7c1a6d4ace" />
   <Project Path="../FoodDelivery.BLL/FoodDelivery.BLL.csproj" />
   <Project Path="../FoodDelivery.DAL/FoodDelivery.DAL.csproj" />
+  <Project Path="../FoodDelivery.Infrastructure/FoodDelivery.Infrastructure.csproj" Id="053994bd-0090-4c08-a386-3a2aad76b27d" />
   <Project Path="../FoodDelivery.Models/FoodDelivery.Models.csproj" />
   <Project Path="../FoodDelivery.NotificationConsumer/FoodDelivery.NotificationConsumer.csproj" Id="8a771bf7-a308-46c8-95ad-4f0b77375bc3" />
   <Project Path="../FoodDelivery.PaymentConsumer/FoodDelivery.PaymentConsumer.csproj" />

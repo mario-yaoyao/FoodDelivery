@@ -1,4 +1,4 @@
-using FoodDelivery.BLL.Interfaces;
+using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.Shared.Contracts.Events;
 
 namespace FoodDelivery.PaymentConsumer

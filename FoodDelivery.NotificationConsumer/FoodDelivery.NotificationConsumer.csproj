@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FoodDelivery.BLL\FoodDelivery.BLL.csproj" />
     <ProjectReference Include="..\FoodDelivery.DAL\FoodDelivery.DAL.csproj" />
+    <ProjectReference Include="..\FoodDelivery.Infrastructure\FoodDelivery.Infrastructure.csproj" />
     <ProjectReference Include="..\FoodDelivery.Shared.Contracts\FoodDelivery.Shared.Contracts.csproj" />
   </ItemGroup>
 </Project>

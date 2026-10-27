@@ -1,5 +1,4 @@
-using FoodDelivery.BLL.Interfaces;
-using FoodDelivery.Models.Models;
+using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.Protos;
 using FoodDelivery.Shared.Contracts.Enums;
 using FoodDelivery.Shared.Contracts.Events;
@@ -12,7 +11,7 @@ public class AnalyticsWorker(
     ILogger<AnalyticsWorker> logger
     ) : BackgroundService
 {
-    private readonly List<Analytic> analyticsList = [];
+    private readonly List<AnalyticsRequest> analyticsList = [];
     private const int BatchSize = 10;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,7 +29,7 @@ public class AnalyticsWorker(
                     message.OrderId,
                     message.CustomerId,
                     message.RestaurantId,
-                    message.TotalAmount,
+                    (double)message.TotalAmount,
                     message.Status,
                     message.CreatedAt,
                     message.CreatedAt,
@@ -52,7 +51,7 @@ public class AnalyticsWorker(
                                 RestaurantId = item.RestaurantId,
                                 TotalAmount = (double)item.TotalAmount,
                                 Status = item.Status.ToString(),
-                                OrderedAt = item.OrderedAt.ToString("O")
+                                OrderedAt = item.OrderedAt
                             });
                     }
 
@@ -70,25 +69,25 @@ public class AnalyticsWorker(
             stoppingToken);
     }
 
-    private static Analytic CreateAnalytic(
+    private static AnalyticsRequest CreateAnalytic(
         int orderId,
         int customerId,
         int restaurantId,
-        decimal totalAmount,
+        double totalAmount,
         OrderStatus status,
         DateTime orderedAt,
         DateTime createdAt,
         bool isDeleted)
     {
-        return new Analytic
+        return new AnalyticsRequest
         {
             OrderId = orderId,
             CustomerId = customerId,
             RestaurantId = restaurantId,
             TotalAmount = totalAmount,
-            Status = status,
-            OrderedAt = orderedAt,
-            CreatedAt = createdAt,
+            Status = status.ToString(),
+            OrderedAt = orderedAt.ToString("O"),
+            CreatedAt = createdAt.ToString("O"),
             IsDeleted = isDeleted
         };
     }

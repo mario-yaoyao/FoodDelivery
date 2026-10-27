@@ -2,7 +2,6 @@
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
 using FoodDelivery.Shared.Contracts.Enums;
-using Hangfire.DAL.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories

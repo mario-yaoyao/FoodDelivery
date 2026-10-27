@@ -1,5 +1,4 @@
-using FoodDelivery.BLL.Interfaces;
-using FoodDelivery.DAL.Interfaces;
+using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.Protos;
 using FoodDelivery.Shared.Contracts.Events;
 

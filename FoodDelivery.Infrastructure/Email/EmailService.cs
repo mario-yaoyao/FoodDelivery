@@ -1,11 +1,11 @@
-﻿using FoodDelivery.BLL.Interfaces;
+﻿using FoodDelivery.Infrastructure.Email.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 
-namespace FoodDelivery.BLL.Services
+namespace FoodDelivery.Infrastructure.Email
 {
     public class EmailService(IConfiguration configuration, ILogger<EmailService> logger) : IEmailService
     {

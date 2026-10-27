@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="2.15.1" />
+    <PackageReference Include="Confluent.Kafka" Version="2.16.0" />
     <PackageReference Include="Google.Protobuf" Version="3.36.2" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.84.0" />
     <PackageReference Include="Grpc.Tools" Version="2.84.0">
@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FoodDelivery.BLL\FoodDelivery.BLL.csproj" />
-    <ProjectReference Include="..\FoodDelivery.Models\FoodDelivery.Models.csproj" />
     <ProjectReference Include="..\FoodDelivery.Shared.Contracts\FoodDelivery.Shared.Contracts.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
-using FoodDelivery.BLL.Interfaces;
-using FoodDelivery.BLL.Services;
+using FoodDelivery.Infrastructure.Kafka;
+using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.PaymentConsumer;
 
 var builder = Host.CreateApplicationBuilder(args);

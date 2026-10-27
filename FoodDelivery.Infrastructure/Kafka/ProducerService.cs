@@ -1,9 +1,9 @@
 ﻿using Confluent.Kafka;
-using FoodDelivery.BLL.Interfaces;
+using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace FoodDelivery.BLL.Services
+namespace FoodDelivery.Infrastructure.Kafka
 {
     public class ProducerService(
         IProducer<string, string> producer,

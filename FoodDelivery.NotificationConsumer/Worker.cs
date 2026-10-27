@@ -1,4 +1,5 @@
-using FoodDelivery.BLL.Interfaces;
+using FoodDelivery.Infrastructure.Email.Interfaces;
+using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.Shared.Contracts.Events;
 
 namespace FoodDelivery.NotificationConsumer;

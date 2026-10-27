@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Hangfire.DAL.Interfaces
+namespace FoodDelivery.DAL.Interfaces
 {
     public interface IDbConnectionFactory
     {

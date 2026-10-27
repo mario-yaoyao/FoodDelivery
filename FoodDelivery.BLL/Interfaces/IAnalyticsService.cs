@@ -1,9 +1,8 @@
-﻿using FoodDelivery.Models.Models;
+﻿using FoodDelivery.Protos;
 
-namespace FoodDelivery.BLL.Interfaces
+namespace FoodDelivery.BLL.Interfaces;
+
+public interface IAnalyticsService
 {
-    public interface IAnalyticsService
-    {
-        Task<bool> BulkInsertAsync(List<Analytic> analyticsList);
-    }
+    Task<int> BulkInsertAsync(List<AnalyticsRequest> requests);
 }

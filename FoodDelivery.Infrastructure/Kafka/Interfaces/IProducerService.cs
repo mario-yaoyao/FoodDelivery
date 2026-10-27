@@ -1,4 +1,4 @@
-﻿namespace FoodDelivery.BLL.Interfaces
+﻿namespace FoodDelivery.Infrastructure.Kafka.Interfaces
 {
     public interface IProducerService
     {

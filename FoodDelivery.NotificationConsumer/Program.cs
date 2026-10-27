@@ -1,8 +1,10 @@
-using FoodDelivery.BLL.Interfaces;
-using FoodDelivery.BLL.Services;
+using FoodDelivery.DAL.Data;
+using FoodDelivery.DAL.Interfaces;
+using FoodDelivery.Infrastructure.Email;
+using FoodDelivery.Infrastructure.Email.Interfaces;
+using FoodDelivery.Infrastructure.Kafka;
+using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.NotificationConsumer;
-using Hangfire.DAL.Data;
-using Hangfire.DAL.Interfaces;
 
 var builder = Host.CreateApplicationBuilder(args);
 var dbConnectionString = builder.Configuration.GetConnectionString("FoodDeliveryDatabase");

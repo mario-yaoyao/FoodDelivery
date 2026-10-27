@@ -7,12 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="2.15.1" />
-    <PackageReference Include="MailKit" Version="4.18.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\FoodDelivery.DAL\FoodDelivery.DAL.csproj" />
+    <ProjectReference Include="..\FoodDelivery.Infrastructure\FoodDelivery.Infrastructure.csproj" />
     <ProjectReference Include="..\FoodDelivery.Models\FoodDelivery.Models.csproj" />
   </ItemGroup>
 
