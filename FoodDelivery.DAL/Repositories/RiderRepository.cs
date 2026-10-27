@@ -1,25 +1,56 @@
-﻿using FoodDelivery.DAL.Data;
+﻿using Dapper;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
 using FoodDelivery.Shared.Contracts.Enums;
-using Microsoft.EntityFrameworkCore;
+using Hangfire.DAL.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories
 {
-    public class RiderRepository(AppDbContext context, ILogger<RiderRepository> logger) : IRiderRepository
+    public class RiderRepository(IDbConnectionFactory connectionFactory, ILogger<RiderRepository> logger) : IRiderRepository
     {
         public async Task<Rider?> GetAvailableRiderAsync()
         {
             try
             {
-                return await context.Riders
-                    .Where(r => r.Status == RiderStatus.Available)
-                    .FirstOrDefaultAsync();
+                using var connection = connectionFactory.CreateConnection();
+
+                var fetchQuery = @"
+                    SELECT TOP 1 *
+                    FROM Riders
+                    WHERE Status = @Status;
+                ";
+
+                return await connection.QueryFirstOrDefaultAsync<Rider>(
+                    fetchQuery,
+                    new { Status = (int)RiderStatus.Available });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Database error occurred while retrieving rider: {Message}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Rider>> GetAvailableRidersAsync()
+        {
+            try
+            {
+                using var connection = connectionFactory.CreateConnection();
+
+                var fetchQuery = @"
+                    SELECT *
+                    FROM Riders
+                    WHERE Status = @Status;
+                ";
+
+                return await connection.QueryAsync<Rider>(
+                    fetchQuery,
+                    new { Status = (int)RiderStatus.Available });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Database error occurred while retrieving available riders: {Message}", ex.Message);
                 throw;
             }
         }

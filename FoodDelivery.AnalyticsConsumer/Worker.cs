@@ -1,6 +1,6 @@
 using FoodDelivery.BLL.Interfaces;
-using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
+using FoodDelivery.Protos;
 using FoodDelivery.Shared.Contracts.Enums;
 using FoodDelivery.Shared.Contracts.Events;
 
@@ -8,49 +8,66 @@ namespace FoodDelivery.AnalyticsConsumer;
 
 public class AnalyticsWorker(
     IConsumerService<OrderCreatedEvent> consumerService,
-    IServiceScopeFactory scopeFactory, 
-    ILogger<AnalyticsWorker> logger) : BackgroundService
+    AnalyticsGrpc.AnalyticsGrpcClient analyticsGrpcClient,
+    ILogger<AnalyticsWorker> logger
+    ) : BackgroundService
 {
     private readonly List<Analytic> analyticsList = [];
     private const int BatchSize = 10;
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await consumerService.StartAsync(
-               "order-created",
-               "analytics-group",
-               async message =>
-               {
-                   logger.LogInformation(
-                       "Analytics received Order {OrderId}",
-                       message.OrderId);
+            "order-created",
+            "analytics-group",
+            async message =>
+            {
+                logger.LogInformation(
+                    "Analytics received Order {OrderId}",
+                    message.OrderId);
 
-                   var analytic = CreateAnalytic(
-                        message.OrderId,
-                        message.CustomerId,
-                        message.RestaurantId,
-                        message.TotalAmount,
-                        message.Status,
-                        message.CreatedAt);
+                var analytic = CreateAnalytic(
+                    message.OrderId,
+                    message.CustomerId,
+                    message.RestaurantId,
+                    message.TotalAmount,
+                    message.Status,
+                    message.CreatedAt,
+                    message.CreatedAt,
+                    message.IsDeleted);
 
-                   analyticsList.Add(analytic);
+                analyticsList.Add(analytic);
 
-                   if (analyticsList.Count >= BatchSize)
-                   {
-                       using var scope = scopeFactory.CreateScope();
-                       var analyticRepository = scope.ServiceProvider.GetRequiredService<IAnalyticsRepository>();
+                if (analyticsList.Count >= BatchSize)
+                {
+                    using var call = analyticsGrpcClient.BulkInsert();
 
-                       await analyticRepository.BulkInsertAsync(analyticsList);
+                    foreach (var item in analyticsList)
+                    {
+                        await call.RequestStream.WriteAsync(
+                            new AnalyticsRequest
+                            {
+                                OrderId = item.OrderId,
+                                CustomerId = item.CustomerId,
+                                RestaurantId = item.RestaurantId,
+                                TotalAmount = (double)item.TotalAmount,
+                                Status = item.Status.ToString(),
+                                OrderedAt = item.OrderedAt.ToString("O")
+                            });
+                    }
 
-                       logger.LogInformation(
-                           "Inserted {Count} analytics records",
-                           analyticsList.Count);
+                    await call.RequestStream.CompleteAsync();
 
-                       analyticsList.Clear();
-                   }
+                    var response = await call.ResponseAsync;
 
-                   await Task.CompletedTask;
-               },
-               stoppingToken);
+                    logger.LogInformation(
+                        "Inserted {Count} analytics records",
+                        response.InsertedCount);
+
+                    analyticsList.Clear();
+                }
+            },
+            stoppingToken);
     }
 
     private static Analytic CreateAnalytic(
@@ -59,8 +76,9 @@ public class AnalyticsWorker(
         int restaurantId,
         decimal totalAmount,
         OrderStatus status,
-        DateTime orderedAt
-        )
+        DateTime orderedAt,
+        DateTime createdAt,
+        bool isDeleted)
     {
         return new Analytic
         {
@@ -69,7 +87,9 @@ public class AnalyticsWorker(
             RestaurantId = restaurantId,
             TotalAmount = totalAmount,
             Status = status,
-            OrderedAt = orderedAt
+            OrderedAt = orderedAt,
+            CreatedAt = createdAt,
+            IsDeleted = isDeleted
         };
     }
 }

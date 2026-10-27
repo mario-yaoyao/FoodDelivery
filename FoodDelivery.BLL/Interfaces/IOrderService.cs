@@ -1,4 +1,5 @@
 ﻿using FoodDelivery.Models.DTOs.Requests;
+using FoodDelivery.Models.Models;
 
 namespace FoodDelivery.BLL.Interfaces
 {
@@ -7,5 +8,7 @@ namespace FoodDelivery.BLL.Interfaces
         Task<bool> CreateOrderAsync(int userId, CreateOrderReqDto order);
         Task<bool> MarkOrderReadyAsync(int orderId);
         Task<bool> ProcessPaymentAsync(int orderId);
+        Task<Order?> GetOrderByIdAsync(int orderId);
+        Task<bool> UpdateRiderAssignmentAsync(int orderId, int riderId);
     }
 }

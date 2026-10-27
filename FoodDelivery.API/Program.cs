@@ -1,12 +1,13 @@
 using Confluent.Kafka;
+using FoodDelivery.API.GrpcServices;
 using FoodDelivery.BLL.Interfaces;
 using FoodDelivery.BLL.Services;
-using FoodDelivery.DAL.Data;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.DAL.Repositories;
 using FoodDelivery.Models.DTOs.Responses;
+using Hangfire.DAL.Data;
+using Hangfire.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,18 +48,28 @@ builder.Services.AddControllers()
             });
         };
     });
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConnectionString));
+builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IRiderRepository, RiderRepository>();
+builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+
+builder.Services.AddGrpc();
 
 var app = builder.Build();
+
+app.MapGrpcService<OrderGrpcService>();
+app.MapGrpcService<RiderGrpcService>();
+app.MapGrpcService<AnalyticsGrpcService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

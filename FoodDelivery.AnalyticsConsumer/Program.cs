@@ -1,15 +1,17 @@
 using FoodDelivery.AnalyticsConsumer;
 using FoodDelivery.BLL.Interfaces;
 using FoodDelivery.BLL.Services;
-using FoodDelivery.DAL.Data;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.DAL.Repositories;
-using Microsoft.EntityFrameworkCore;
+using FoodDelivery.Protos;
+using Hangfire.DAL.Data;
+using Hangfire.DAL.Interfaces;
 
 var builder = Host.CreateApplicationBuilder(args);
 var dbConnectionString = builder.Configuration.GetConnectionString("FoodDeliveryDatabase");
+var apiUrlString = builder.Configuration.GetConnectionString("ApiUrl");
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConnectionString));
+builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
 builder.Services.AddSingleton(typeof(IConsumerService<>), typeof(ConsumerService<>));
 
@@ -17,17 +19,11 @@ builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 
 builder.Services.AddHostedService<AnalyticsWorker>();
 
+builder.Services.AddGrpcClient<AnalyticsGrpc.AnalyticsGrpcClient>(
+    options =>
+    {
+        options.Address = new Uri(apiUrlString!);
+    });
+
 var host = builder.Build();
 host.Run();
-
-
-//builder.Services.AddSingleton<IProducerService, ProducerService>();
-
-//builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConnectionString));
-
-//builder.Services.AddSingleton(typeof(IConsumerService<>), typeof(ConsumerService<>));
-
-//builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-//builder.Services.AddScoped<IRiderRepository, RiderRepository>();
-
-//builder.Services.AddHostedService<RiderWorker>();

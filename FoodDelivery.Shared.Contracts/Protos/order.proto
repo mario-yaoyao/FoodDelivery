@@ -1,0 +1,30 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "FoodDelivery.Protos";
+
+package order;
+
+service OrderGrpc {
+  rpc GetOrderById (GetOrderRequest) returns (OrderResponse);
+  rpc AssignRiderToOrder (AssignRiderRequest) returns (AssignRiderResponse);
+}
+
+message GetOrderRequest {
+  int32 orderId = 1;
+}
+
+message OrderResponse {
+  int32 orderId = 1;
+  int32 customerId = 2;
+  string customerName = 3;
+  string customerEmail = 4;
+}
+
+message AssignRiderRequest {
+  int32 orderId = 1;
+  int32 riderId = 2;
+}
+
+message AssignRiderResponse {
+  bool success = 1;
+}

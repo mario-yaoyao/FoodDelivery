@@ -1,22 +1,45 @@
-﻿using FoodDelivery.DAL.Data;
+﻿using Dapper;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
+using Hangfire.DAL.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories
 {
-    public class PaymentRepository(AppDbContext context, ILogger<OrderRepository> logger) : IPaymentRepository
+    public class PaymentRepository(IDbConnectionFactory connectionFactory, ILogger<OrderRepository> logger) : IPaymentRepository
     {
         public async Task AddPaymentAsync(Payment payment)
         {
             try
             {
-                await context.Payments.AddAsync(payment);
-                await context.SaveChangesAsync();
+                using var connection = connectionFactory.CreateConnection();
+
+                var insertQuery = @"
+                    INSERT INTO Payments
+                    (
+                        OrderId,
+                        Amount,
+                        Status,
+                        Method,
+                        CreatedAt,
+                        IsDeleted
+                    )
+                    VALUES
+                    (
+                        @OrderId,
+                        @Amount,
+                        @Status,
+                        @Method,
+                        @CreatedAt,
+                        @IsDeleted
+                    );
+                ";
+
+                await connection.ExecuteAsync(insertQuery, payment);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Database error while adding payment.");
+                logger.LogError(ex, "Database error occured while adding payment.");
                 throw;
             }
         }

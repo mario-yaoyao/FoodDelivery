@@ -16,7 +16,7 @@ namespace FoodDelivery.PaymentConsumer
                         "Processing payment for Order {OrderId}",
                         message.OrderId);
 
-                    // Note: Implement payment logic here
+                    // Note: Payment logic implementation here
 
                     await Task.CompletedTask;
                 },
@@ -24,4 +24,3 @@ namespace FoodDelivery.PaymentConsumer
         }
     }
 }
-// messageId (identifier) - implement a mechanism to control what partitions can receive kafka message

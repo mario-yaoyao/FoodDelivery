@@ -1,13 +1,13 @@
 using FoodDelivery.BLL.Interfaces;
 using FoodDelivery.BLL.Services;
-using FoodDelivery.DAL.Data;
 using FoodDelivery.NotificationConsumer;
-using Microsoft.EntityFrameworkCore;
+using Hangfire.DAL.Data;
+using Hangfire.DAL.Interfaces;
 
 var builder = Host.CreateApplicationBuilder(args);
 var dbConnectionString = builder.Configuration.GetConnectionString("FoodDeliveryDatabase");
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConnectionString));
+builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
 builder.Services.AddSingleton(typeof(IConsumerService<>), typeof(ConsumerService<>));
 

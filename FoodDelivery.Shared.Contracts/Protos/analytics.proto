@@ -1,0 +1,23 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "FoodDelivery.Protos";
+
+package analytics;
+
+service AnalyticsGrpc {
+  rpc BulkInsert (stream AnalyticsRequest) returns (BulkAnalyticsResponse);
+}
+
+message AnalyticsRequest {
+  int32 orderId = 1;
+  int32 customerId = 2;
+  int32 restaurantId = 3;
+  double totalAmount = 4;
+  string status = 5;
+  string orderedAt = 6;
+}
+
+message BulkAnalyticsResponse {
+  bool success = 1;
+  int32 insertedCount = 2;
+}

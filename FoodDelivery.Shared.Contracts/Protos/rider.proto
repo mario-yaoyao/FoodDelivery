@@ -1,0 +1,18 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "FoodDelivery.Protos";
+
+package rider;
+
+service RiderGrpc {
+  rpc GetAvailableRider (EmptyRequest) returns (RiderResponse);
+  rpc GetAvailableRiders (EmptyRequest) returns (stream RiderResponse);
+}
+
+message EmptyRequest {
+}
+
+message RiderResponse {
+  int32 riderId = 1;
+  string fullName = 2;
+}

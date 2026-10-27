@@ -1,5 +1,6 @@
 using FoodDelivery.BLL.Interfaces;
 using FoodDelivery.DAL.Interfaces;
+using FoodDelivery.Protos;
 using FoodDelivery.Shared.Contracts.Events;
 
 namespace FoodDelivery.RiderConsumer
@@ -7,7 +8,8 @@ namespace FoodDelivery.RiderConsumer
     public class RiderWorker(
         IConsumerService<DeliveryRequestedEvent> consumerService,
         IProducerService producerService,
-        IServiceScopeFactory scopeFactory,
+        OrderGrpc.OrderGrpcClient orderGrpcClient,
+        RiderGrpc.RiderGrpcClient riderGrpcClient,
         ILogger<RiderWorker> logger) : BackgroundService
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -21,11 +23,7 @@ namespace FoodDelivery.RiderConsumer
                         "Assigning rider for Order {OrderId}...",
                         message.OrderId);
 
-                    using var scope = scopeFactory.CreateScope();
-                    var riderRepository = scope.ServiceProvider.GetRequiredService<IRiderRepository>();
-                    var orderRepository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
-
-                    var rider = await riderRepository.GetAvailableRiderAsync();
+                    var rider = await riderGrpcClient.GetAvailableRiderAsync(new EmptyRequest());
 
                     if (rider is null)
                     {
@@ -36,7 +34,11 @@ namespace FoodDelivery.RiderConsumer
                         return;
                     }
 
-                    var existingOrder = await orderRepository.GetOrderByIdAsync(message.OrderId); 
+                    var existingOrder = await orderGrpcClient.GetOrderByIdAsync(
+                        new GetOrderRequest
+                        {
+                            OrderId = message.OrderId
+                        });
 
                     if (existingOrder is null)
                     {
@@ -46,8 +48,12 @@ namespace FoodDelivery.RiderConsumer
                         return;
                     }
 
-                    existingOrder.RiderId = rider.Id;
-                    await orderRepository.SaveChangesAsync();
+                    await orderGrpcClient.AssignRiderToOrderAsync(
+                        new AssignRiderRequest
+                        {
+                            OrderId = existingOrder.OrderId,
+                            RiderId = rider.RiderId
+                        });
 
                     // Event Chained Unicast - Notification
                     await producerService.PublishAsync<RiderAssignedEvent>(
@@ -64,7 +70,7 @@ namespace FoodDelivery.RiderConsumer
 
                     logger.LogInformation(
                         "Assigned Rider {RiderId} to Order {OrderId}",
-                        rider.Id,
+                        rider.RiderId,
                         message.OrderId);
                 },
                 stoppingToken);

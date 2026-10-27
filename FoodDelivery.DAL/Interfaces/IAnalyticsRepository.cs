@@ -4,6 +4,6 @@ namespace FoodDelivery.DAL.Interfaces
 {
     public interface IAnalyticsRepository
     {
-        Task BulkInsertAsync(IEnumerable<Analytic> analytics);
+        Task<bool> BulkInsertAsync(IEnumerable<Analytic> analytics);
     }
 }

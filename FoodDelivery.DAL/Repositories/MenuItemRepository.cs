@@ -1,19 +1,28 @@
-﻿using FoodDelivery.DAL.Data;
+﻿using Dapper;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
-using Microsoft.EntityFrameworkCore;
+using Hangfire.DAL.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories
 {
-    public class MenuItemRepository(AppDbContext context, ILogger<MenuItemRepository> logger) : IMenuItemRepository
+    public class MenuItemRepository(IDbConnectionFactory connectionFactory, ILogger<MenuItemRepository> logger) : IMenuItemRepository
     {
         public async Task<MenuItem?> GetMenuItemByIdAsync(int menuItemId)
         {
             try
             {
-                return await context.MenuItems
-                    .FirstOrDefaultAsync(mi => mi.Id == menuItemId);
+                using var connection = connectionFactory.CreateConnection();
+
+                var fetchQuery = @"
+                    SELECT *
+                    FROM MenuItems
+                    WHERE Id = @MenuItemId;
+                ";
+
+                return await connection.QueryFirstOrDefaultAsync<MenuItem>(
+                    fetchQuery,
+                    new { MenuItemId = menuItemId });
             }
             catch (Exception ex)
             {

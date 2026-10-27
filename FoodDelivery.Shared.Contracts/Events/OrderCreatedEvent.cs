@@ -14,5 +14,6 @@ namespace FoodDelivery.Shared.Contracts.Events
         public decimal TotalAmount { get; set; }
         public OrderStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

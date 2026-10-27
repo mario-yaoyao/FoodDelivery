@@ -1,23 +1,55 @@
-﻿using FoodDelivery.DAL.Data;
+﻿using Dapper;
 using FoodDelivery.DAL.Interfaces;
 using FoodDelivery.Models.Models;
+using Hangfire.DAL.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories
 {
-    public class AnalyticsRepository(AppDbContext context, ILogger<AnalyticsRepository> logger) : IAnalyticsRepository
+    public class AnalyticsRepository(IDbConnectionFactory connectionFactory, ILogger<AnalyticsRepository> logger) : IAnalyticsRepository
     {
-        public async Task BulkInsertAsync(IEnumerable<Analytic> analytics)
+        public async Task<bool> BulkInsertAsync(IEnumerable<Analytic> analytics)
         {
             try
             {
-                await context.Analytics.AddRangeAsync(analytics);
+                using var connection = connectionFactory.CreateConnection();
 
-                await context.SaveChangesAsync();
+                var insertQuery = @"
+                    INSERT INTO Analytics
+                    (
+                        OrderId,
+                        CustomerId,
+                        RestaurantId,
+                        RiderId,
+                        TotalAmount,
+                        Status,
+                        OrderedAt,
+                        DeliveredAt,
+                        CreatedAt,
+                        IsDeleted
+                    )
+                    VALUES
+                    (
+                        @OrderId,
+                        @CustomerId,
+                        @RestaurantId,
+                        @RiderId,
+                        @TotalAmount,
+                        @Status,
+                        @OrderedAt,
+                        @DeliveredAt,
+                        @CreatedAt,
+                        @IsDeleted
+                    );
+                ";
+
+                var rowsAffected = await connection.ExecuteAsync(insertQuery, analytics);
+
+                return rowsAffected > 0;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Database error while retrieving menu item by ID: {Message}", ex.Message);
+                logger.LogError(ex, "Database error occurred while adding analytics records: {Message}", ex.Message);
                 throw;
             }
         }

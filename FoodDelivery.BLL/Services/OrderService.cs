@@ -4,6 +4,7 @@ using FoodDelivery.Models.DTOs.Requests;
 using FoodDelivery.Models.Models;
 using FoodDelivery.Shared.Contracts.Enums;
 using FoodDelivery.Shared.Contracts.Events;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace FoodDelivery.BLL.Services
 {
@@ -42,7 +43,9 @@ namespace FoodDelivery.BLL.Services
                 RestaurantId = request.RestaurantId,
                 TotalAmount = totalAmount,
                 Status = OrderStatus.Created,
-                OrderItems = orderItems
+                OrderItems = orderItems,
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false
             };
 
             await orderRepository.AddOrderAsync(order);
@@ -77,9 +80,11 @@ namespace FoodDelivery.BLL.Services
 
             if (order is null) return false;
 
-            order.Status = OrderStatus.ReadyForPickup;
+            await orderRepository.UpdateOrderStatusAsync(
+                orderId,
+                OrderStatus.ReadyForPickup);
 
-            await orderRepository.SaveChangesAsync();
+            order.Status = OrderStatus.ReadyForPickup;
 
             // Round Robin Implementation - Rider
             await producerService.PublishAsync(
@@ -109,7 +114,9 @@ namespace FoodDelivery.BLL.Services
                 OrderId = order.Id,
                 Amount = order.TotalAmount,
                 Status = PaymentStatus.Pending,
-                Method = PaymentMethod.CashOnDelivery
+                Method = PaymentMethod.CashOnDelivery,
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false
             };
 
             await paymentRepository.AddPaymentAsync(payment);
@@ -126,6 +133,20 @@ namespace FoodDelivery.BLL.Services
                 });
 
             return true;
+        }
+
+        public async Task<Order?> GetOrderByIdAsync(int orderId)
+        {
+            var order = await orderRepository.GetOrderByIdAsync(orderId);
+
+            return order;
+        }
+
+        public async Task<bool> UpdateRiderAssignmentAsync(int orderId, int riderId)
+        {
+            return await orderRepository.UpdateRiderAssignmentAsync(
+                orderId,
+                riderId);
         }
     }
 }
