@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "FoodDelivery.Protos";
+
+package dispatch;
+
+service DispatchGrpc {
+  rpc TrackDelivery (stream RiderStatusRequest) returns (stream DispatcherInstructionResponse);
+}
+
+message RiderStatusRequest
+{
+    int32 riderId = 1;
+    string status = 2;
+}
+
+message DispatcherInstructionResponse
+{
+    string instruction = 1;
+}

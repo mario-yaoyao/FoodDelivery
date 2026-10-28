@@ -71,6 +71,7 @@ var app = builder.Build();
 app.MapGrpcService<OrderGrpcService>();
 app.MapGrpcService<RiderGrpcService>();
 app.MapGrpcService<AnalyticsGrpcService>();
+app.MapGrpcService<DispatchGrpcService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
