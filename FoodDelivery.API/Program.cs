@@ -9,9 +9,24 @@ using FoodDelivery.Infrastructure.Kafka;
 using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.Models.DTOs.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8080, o =>
+    {
+        o.Protocols = HttpProtocols.Http1;
+    });
+
+    options.ListenAnyIP(8081, o =>
+    {
+        o.Protocols = HttpProtocols.Http2;
+    });
+});
+
 var dbConnectionString = builder.Configuration.GetConnectionString("FoodDeliveryDatabase");
 var kafkaConnectionString = builder.Configuration.GetConnectionString("KafkaServer");
 
@@ -74,13 +89,13 @@ app.MapGrpcService<AnalyticsGrpcService>();
 app.MapGrpcService<DispatchGrpcService>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.MapOpenApi();
     app.MapScalarApiReference();
-}
+//}
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

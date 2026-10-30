@@ -3,6 +3,10 @@ using FoodDelivery.Infrastructure.Kafka;
 using FoodDelivery.Infrastructure.Kafka.Interfaces;
 using FoodDelivery.Protos;
 
+AppContext.SetSwitch(
+    "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport",
+    true);
+
 var builder = Host.CreateApplicationBuilder(args);
 var dbConnectionString = builder.Configuration.GetConnectionString("FoodDeliveryDatabase");
 var apiUrlString = builder.Configuration.GetConnectionString("ApiUrl");

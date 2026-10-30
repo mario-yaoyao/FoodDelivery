@@ -1,0 +1,127 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: FoodDelivery.API/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__KafkaServer: "kafka:9092"
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "${DB_PASSWORD}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  kafka:
+    image: apache/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  analytics-consumer:
+    build:
+      context: .
+      dockerfile: FoodDelivery.AnalyticsConsumer/Dockerfile
+    depends_on:
+      - kafka
+      - api
+      - db
+    environment:
+      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__KafkaServer: "kafka:9092"
+      ConnectionStrings__ApiUrl: "http://api:8081"
+
+  dispatch-monitor:
+    build:
+      context: .
+      dockerfile: FoodDelivery.DispatchMonitor/Dockerfile
+    environment:
+      ConnectionStrings__ApiUrl: "http://api:8081"
+
+  notification-consumer:
+    build:
+      context: .
+      dockerfile: FoodDelivery.NotificationConsumer/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__KafkaServer: "kafka:9092"
+      SmtpSettings__SmtpHost: smtp.gmail.com
+      SmtpSettings__SmtpPort: 587
+      SmtpSettings__SmtpUser: budgetwise.el@gmail.com
+      SmtpSettings__SmtpPassword: ${SMTP_PASSWORD}
+
+  payment-consumer:
+    build:
+      context: .
+      dockerfile: FoodDelivery.PaymentConsumer/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      ConnectionStrings__KafkaServer: "kafka:9092"
+
+  rider-consumer-1:
+    build:
+      context: .
+      dockerfile: FoodDelivery.RiderConsumer/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__KafkaServer: "kafka:9092"
+      ConnectionStrings__ApiUrl: "http://api:8081"
+
+  rider-consumer-2:
+    build:
+      context: .
+      dockerfile: FoodDelivery.RiderConsumer/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__KafkaServer: "kafka:9092"
+      ConnectionStrings__ApiUrl: "http://api:8081"
+
+  rider-consumer-3:
+    build:
+      context: .
+      dockerfile: FoodDelivery.RiderConsumer/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__KafkaServer: "kafka:9092"
+      ConnectionStrings__ApiUrl: "http://api:8081"
+
+  rider-monitor:
+    build:
+      context: .
+      dockerfile: FoodDelivery.RiderMonitor/Dockerfile
+    environment:
+      ConnectionStrings__ApiUrl: "http://api:8081"
+
+volumes:
+  sql_data:
+  kafka_data:

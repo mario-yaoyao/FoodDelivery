@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".env" />
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Project Path="FoodDelivery.AnalyticsConsumer/FoodDelivery.AnalyticsConsumer.csproj" />
+  <Project Path="FoodDelivery.API/FoodDelivery.API.csproj" />
+  <Project Path="FoodDelivery.BLL/FoodDelivery.BLL.csproj" />
+  <Project Path="FoodDelivery.DAL/FoodDelivery.DAL.csproj" />
+  <Project Path="FoodDelivery.DispatchMonitor/FoodDelivery.DispatchMonitor.csproj" />
+  <Project Path="FoodDelivery.Infrastructure/FoodDelivery.Infrastructure.csproj" />
+  <Project Path="FoodDelivery.Models/FoodDelivery.Models.csproj" />
+  <Project Path="FoodDelivery.NotificationConsumer/FoodDelivery.NotificationConsumer.csproj" />
+  <Project Path="FoodDelivery.PaymentConsumer/FoodDelivery.PaymentConsumer.csproj" />
+  <Project Path="FoodDelivery.RiderConsumer/FoodDelivery.RiderConsumer.csproj" />
+  <Project Path="FoodDelivery.RiderMonitor/FoodDelivery.RiderMonitor.csproj" />
+  <Project Path="FoodDelivery.Shared.Contracts/FoodDelivery.Shared.Contracts.csproj" />
+</Solution>
