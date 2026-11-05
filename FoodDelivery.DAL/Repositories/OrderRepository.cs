@@ -34,9 +34,9 @@ namespace FoodDelivery.DAL.Repositories
                             @Status,
                             @CreatedAt,
                             @IsDeleted
-                        );
+                        )
 
-                    SELECT CAST(SCOPE_IDENTITY() AS INT);
+                    RETURNING Id;
                 ";
 
                 order.Id = await connection.QuerySingleAsync<int>(

@@ -9,14 +9,32 @@ public class DispatchMonitorWorker(
     ) : BackgroundService
 {
     protected override async Task ExecuteAsync(
-        CancellationToken stoppingToken)
+    CancellationToken stoppingToken)
     {
-        using var call = dispatchGrpcClient.TrackDelivery();
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                using var call = dispatchGrpcClient.TrackDelivery();
 
-        var sendTask = SendStatuses(call, logger, stoppingToken);
-        var receiveTask = ReceiveInstructions(call, logger, stoppingToken);
+                var sendTask = SendStatuses(call, logger, stoppingToken);
+                var receiveTask = ReceiveInstructions(call, logger, stoppingToken);
 
-        await Task.WhenAll(sendTask, receiveTask);
+                await Task.WhenAll(sendTask, receiveTask);
+
+                break;
+            }
+            catch (RpcException ex)
+            {
+                logger.LogWarning(
+                    ex,
+                    "Failed to connect. Retrying in 5 seconds.");
+
+                await Task.Delay(
+                    TimeSpan.FromSeconds(5),
+                    stoppingToken);
+            }
+        }
     }
 
     private static async Task SendStatuses(

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FoodDelivery.DAL.Repositories
 {
-    public class PaymentRepository(IDbConnectionFactory connectionFactory, ILogger<OrderRepository> logger) : IPaymentRepository
+    public class PaymentRepository(IDbConnectionFactory connectionFactory, ILogger<PaymentRepository> logger) : IPaymentRepository
     {
         public async Task AddPaymentAsync(Payment payment)
         {

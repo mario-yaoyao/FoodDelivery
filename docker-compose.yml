@@ -7,20 +7,37 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      - db
+      - postgres
+      # - sqlserver
+      - kafka
     environment:
-      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      # DatabaseProvider: SqlServer
+      # ConnectionStrings__FoodDeliveryDatabase: "Server=sqlserver;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      DatabaseProvider: PostgreSql
+      ConnectionStrings__FoodDeliveryDatabase: "Host=postgres;Port=5432;Database=food_delivery;Username=postgres;Password=${DB_PASSWORD};"
       ConnectionStrings__KafkaServer: "kafka:9092"
 
-  db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  # sqlserver:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     SA_PASSWORD: "${DB_PASSWORD}"
+  #   ports:
+  #     - "1433:1433"
+  #   volumes:
+  #     - sqlserver_data:/var/opt/mssql
+
+  postgres:
+    image: postgres:16
+    container_name: fooddelivery-postgres
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: food_delivery
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
     ports:
-      - "1433:1433"
+      - "5433:5432"
     volumes:
-      - sql_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
 
   kafka:
     image: apache/kafka:latest
@@ -46,9 +63,11 @@ services:
     depends_on:
       - kafka
       - api
-      - db
+      # - sqlserver
+      - postgres
     environment:
-      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      # ConnectionStrings__FoodDeliveryDatabase: "Server=sqlserver;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__FoodDeliveryDatabase: "Host=postgres;Port=5432;Database=food_delivery;Username=postgres;Password=${DB_PASSWORD};"
       ConnectionStrings__KafkaServer: "kafka:9092"
       ConnectionStrings__ApiUrl: "http://api:8081"
 
@@ -65,8 +84,10 @@ services:
       dockerfile: FoodDelivery.NotificationConsumer/Dockerfile
     depends_on:
       - kafka
+      - api
     environment:
-      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      #ConnectionStrings__FoodDeliveryDatabase: "Server=sqlserver;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__FoodDeliveryDatabase: "Host=postgres;Port=5432;Database=food_delivery;Username=postgres;Password=${DB_PASSWORD};"
       ConnectionStrings__KafkaServer: "kafka:9092"
       SmtpSettings__SmtpHost: smtp.gmail.com
       SmtpSettings__SmtpPort: 587
@@ -79,6 +100,7 @@ services:
       dockerfile: FoodDelivery.PaymentConsumer/Dockerfile
     depends_on:
       - kafka
+      - api
     environment:
       ConnectionStrings__KafkaServer: "kafka:9092"
 
@@ -88,8 +110,10 @@ services:
       dockerfile: FoodDelivery.RiderConsumer/Dockerfile
     depends_on:
       - kafka
+      - api
     environment:
-      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      # ConnectionStrings__FoodDeliveryDatabase: "Server=sqlserver;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__FoodDeliveryDatabase: "Host=postgres;Port=5432;Database=food_delivery;Username=postgres;Password=${DB_PASSWORD};"
       ConnectionStrings__KafkaServer: "kafka:9092"
       ConnectionStrings__ApiUrl: "http://api:8081"
 
@@ -99,8 +123,10 @@ services:
       dockerfile: FoodDelivery.RiderConsumer/Dockerfile
     depends_on:
       - kafka
+      - api
     environment:
-      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      # ConnectionStrings__FoodDeliveryDatabase: "Server=sqlserver;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__FoodDeliveryDatabase: "Host=postgres;Port=5432;Database=food_delivery;Username=postgres;Password=${DB_PASSWORD};"
       ConnectionStrings__KafkaServer: "kafka:9092"
       ConnectionStrings__ApiUrl: "http://api:8081"
 
@@ -110,8 +136,10 @@ services:
       dockerfile: FoodDelivery.RiderConsumer/Dockerfile
     depends_on:
       - kafka
+      - api
     environment:
-      ConnectionStrings__FoodDeliveryDatabase: "Server=db;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      # ConnectionStrings__FoodDeliveryDatabase: "Server=sqlserver;Database=food_delivery;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__FoodDeliveryDatabase: "Host=postgres;Port=5432;Database=food_delivery;Username=postgres;Password=${DB_PASSWORD};"
       ConnectionStrings__KafkaServer: "kafka:9092"
       ConnectionStrings__ApiUrl: "http://api:8081"
 
@@ -123,5 +151,6 @@ services:
       ConnectionStrings__ApiUrl: "http://api:8081"
 
 volumes:
-  sql_data:
+  sqlserver_data:
+  postgres_data:
   kafka_data:

@@ -15,9 +15,10 @@ namespace FoodDelivery.DAL.Repositories
                 using var connection = connectionFactory.CreateConnection();
 
                 var fetchQuery = @"
-                    SELECT TOP 1 *
+                    SELECT *
                     FROM Riders
-                    WHERE Status = @Status;
+                    WHERE Status = @Status
+                    LIMIT 1;
                 ";
 
                 return await connection.QueryFirstOrDefaultAsync<Rider>(
